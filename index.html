@@ -242,6 +242,7 @@
 </footer>
 
 <script>
+<script>
 const GH_USER = "dimitar2002m";
 const TOPIC_FILTER = "map"; // Добави topic "map" на repo-то в GitHub → появява се автоматично тук
 
@@ -251,11 +252,19 @@ const DEMO_OVERRIDES = {
   "Population-Density-Map-of-Bulgaria-Census-2021-": "https://dimitar2002m.github.io/Population-Density-Map-of-Bulgaria-Census-2021-/#7/42.869/25.207",
   "The-Crusades": "https://dimitar2002m.github.io/The-Crusades/",
   "China-Population-2024-y": "https://dimitar2002m.github.io/China-Population-2024-y/",
-  "Population-Bulgaria-2025": "https://dimitar2002m.github.io/Population-Bulgaria-2025/"
+  "Population-Bulgaria-2025": "https://dimitar2002m.github.io/Population-Bulgaria-2025/",
+  "Map-of-Japan-s-agricultural-sector": "https://dimitar2002m.github.io/Map-of-Japan-s-agricultural-sector/"
 };
 
 // Резервен списък — ако GitHub API е недостъпен или repo-тата още нямат topic "map"
 const FALLBACK = [
+  {
+    name: "Map-of-Japan-s-agricultural-sector",
+    title: "Япония — стопанство и земеделие",
+    description: "Основни земеделски култури по префектури — ориз, зеленчуци, плодове и други култури.",
+    repo: "https://github.com/dimitar2002m/Map-of-Japan-s-agricultural-sector",
+    demo: DEMO_OVERRIDES["Map-of-Japan-s-agricultural-sector"]
+  },
   {
     name: "April-Uprising",
     title: "Априлското въстание, 1876",
@@ -299,7 +308,8 @@ const TITLE_OVERRIDES = {
   "Population-Density-Map-of-Bulgaria-Census-2021-": "Гъстота на населението — Преброяване 2021",
   "The-Crusades": "Кръстоносните походи",
   "China-Population-2024-y": "Население на Китай, 2024",
-  "Population-Bulgaria-2025": "Население на България, 2025"
+  "Population-Bulgaria-2025": "Население на България, 2025",
+  "Map-of-Japan-s-agricultural-sector": "Япония — стопанство и земеделие"
 };
 
 function niceTitle(name){
@@ -422,6 +432,9 @@ async function loadFromGithub(){
   }
 })();
 </script>
+
+</body>
+</html>
 
 </body>
 </html>
