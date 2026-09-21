@@ -30,11 +30,9 @@
     line-height:1.55;
     -webkit-font-smoothing:antialiased;
   }
-
   .contours{
     position:fixed; inset:0; z-index:0; opacity:0.16; pointer-events:none;
   }
-
   header.hero{
     position:relative; z-index:1;
     padding:9vh 6vw 8vh;
@@ -72,9 +70,7 @@
   }
   .hero-meta a{ color:var(--route); }
   .hero-meta span.k{ color:var(--parchment-dim); }
-
   main{ position:relative; z-index:1; padding:6vh 6vw 10vh; }
-
   .status-line{
     font-size:0.78rem;
     color:var(--parchment-dim);
@@ -85,7 +81,6 @@
     width:7px; height:7px; border-radius:50%;
     background:var(--gold);
   }
-
   .grid{
     display:grid;
     grid-template-columns:repeat(auto-fill, minmax(380px, 1fr));
@@ -93,7 +88,6 @@
     background:var(--panel-line);
     border:1px solid var(--panel-line);
   }
-
   .card{
     background:var(--panel);
     display:flex; flex-direction:column;
@@ -109,7 +103,6 @@
     outline:2px solid var(--gold);
     outline-offset:-2px;
   }
-
   .card-preview{
     position:relative;
     width:100%;
@@ -122,7 +115,7 @@
     position:absolute; inset:0;
     width:100%; height:100%;
     border:0;
-    pointer-events:none; /* скрива легендите и контролите — няма интеракция */
+    pointer-events:none;
   }
   .card-preview-label{
     position:absolute; top:0.7rem; left:0.7rem;
@@ -142,13 +135,11 @@
     color:var(--parchment-dim);
     pointer-events:none;
   }
-
   .card-body{
     padding:1.6rem 1.8rem;
     display:flex; flex-direction:column; gap:1rem;
     flex-grow:1;
   }
-
   .card h2{
     font-family:var(--font-display);
     font-weight:600;
@@ -177,14 +168,12 @@
   }
   .card:hover .card-arrow{ transform:translate(3px,-3px); }
   .card-arrow{ transition:transform 0.2s ease; font-size:1rem; display:inline-block; }
-
   .empty, .error{
     font-family:var(--font-display);
     font-style:italic;
     color:var(--parchment-dim);
     padding:2rem 0;
   }
-
   footer{
     position:relative; z-index:1;
     padding:3rem 6vw 4rem;
@@ -195,19 +184,16 @@
   }
   footer a{ color:var(--route); text-decoration:none; }
   footer a:hover{ text-decoration:underline; }
-
   @media (max-width:600px){
     .grid{ grid-template-columns:1fr; }
     header.hero{ padding:7vh 6vw 6vh; }
   }
-
   @media (prefers-reduced-motion: reduce){
     *{ animation:none !important; transition:none !important; }
   }
 </style>
 </head>
 <body>
-
 <svg class="contours" viewBox="0 0 1200 800" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
   <g fill="none" stroke="#7fa9a3" stroke-width="1">
     <path d="M-50,120 C 200,60 400,180 650,110 S 1000,40 1250,130" />
@@ -218,7 +204,6 @@
     <path d="M-50,700 C 250,650 480,760 720,690 S 1030,630 1250,710" />
   </g>
 </svg>
-
 <header class="hero">
   <p class="coord-label">42.6977° N, 23.3219° E — Картографско портфолио</p>
   <h1>Дигитална картографска библиотека<br>Автор: Димитър Манолов</h1>
@@ -227,7 +212,6 @@
     <span><span class="k">GitHub</span> — <a href="https://github.com/dimitar2002m" target="_blank" rel="noopener">github.com/dimitar2002m</a></span>
   </div>
 </header>
-
 <main>
   <p class="status-line" id="status">
     <span class="status-dot"></span>
@@ -235,13 +219,10 @@
   </p>
   <div class="grid" id="grid"></div>
 </main>
-
 <footer>
   <span>Обновява се автоматично от repo-та с topic <code>map</code> в GitHub профила.</span>
   <a href="https://github.com/dimitar2002m" target="_blank" rel="noopener">Целият профил →</a>
 </footer>
-
-<script>
 <script>
 const GH_USER = "dimitar2002m";
 const TOPIC_FILTER = "map"; // Добави topic "map" на repo-то в GitHub → появява се автоматично тук
@@ -432,9 +413,5 @@ async function loadFromGithub(){
   }
 })();
 </script>
-
-</body>
-</html>
-
 </body>
 </html>
