@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="bg">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Димитър Манолов — Дигитален атлас</title>
+<style>
+  :root{
+    --ink:#0e2027;
+    --panel:#132c34;
+    --panel-line:#25454e;
+    --parchment:#e9e2cd;
+    --parchment-dim:#b9b192;
+    --gold:#c39a3d;
+    --route:#7fa9a3;
+    --font-display: 'Spectral', Georgia, 'Times New Roman', serif;
+    --font-mono: 'IBM Plex Mono', 'Courier New', monospace;
+  }
+  @font-face{
+    font-family:'Spectral';
+    src: local('Spectral');
+  }
+  *{ box-sizing:border-box; }
+  html,body{ margin:0; padding:0; }
+  body{
+    background:var(--ink);
+    color:var(--parchment);
+    font-family:var(--font-mono);
+    line-height:1.55;
+    -webkit-font-smoothing:antialiased;
+  }
+
+  /* subtle contour texture */
+  .contours{
+    position:fixed; inset:0; z-index:0; opacity:0.16; pointer-events:none;
+  }
+
+  header.hero{
+    position:relative; z-index:1;
+    padding:9vh 6vw 8vh;
+    border-bottom:1px solid var(--panel-line);
+  }
+  .coord-label{
+    font-family:var(--font-mono);
+    font-size:0.78rem;
+    letter-spacing:0.04em;
+    color:var(--route);
+    margin:0 0 1.4rem;
+  }
+  h1{
+    font-family:var(--font-display);
+    font-weight:600;
+    font-size:clamp(2.4rem, 6vw, 4.4rem);
+    line-height:1.05;
+    margin:0 0 1rem;
+    color:var(--parchment);
+    max-width:16ch;
+  }
+  .hero-sub{
+    font-family:var(--font-display);
+    font-size:1.15rem;
+    font-style:italic;
+    color:var(--parchment-dim);
+    max-width:52ch;
+    margin:0;
+  }
+  .hero-meta{
+    margin-top:2.2rem;
+    display:flex; gap:2.4rem; flex-wrap:wrap;
+    font-size:0.8rem;
+    color:var(--route);
+  }
+  .hero-meta a{ color:var(--route); }
+  .hero-meta span.k{ color:var(--parchment-dim); }
+
+  main{ position:relative; z-index:1; padding:6vh 6vw 10vh; }
+
+  .status-line{
+    font-size:0.78rem;
+    color:var(--parchment-dim);
+    margin-bottom:2.6rem;
+    display:flex; align-items:center; gap:0.6rem;
+  }
+  .status-dot{
+    width:7px; height:7px; border-radius:50%;
+    background:var(--gold);
+  }
+
+  .grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fill, minmax(380px, 1fr));
+    gap:1px;
+    background:var(--panel-line);
+    border:1px solid var(--panel-line);
+  }
+
+  .card{
+    background:var(--panel);
+    display:flex; flex-direction:column;
+    color:inherit;
+    position:relative;
+  }
+
+  .card-preview{
+    position:relative;
+    width:100%;
+    aspect-ratio:16/10;
+    background:#0a1a20;
+    border-bottom:1px solid var(--panel-line);
+    overflow:hidden;
+  }
+  .card-preview iframe{
+    position:absolute; inset:0;
+    width:100%; height:100%;
+    border:0;
+  }
+  .card-preview-label{
+    position:absolute; top:0.7rem; left:0.7rem;
+    font-size:0.68rem;
+    padding:0.2rem 0.5rem;
+    background:rgba(14,32,39,0.82);
+    color:var(--route);
+    border:1px solid var(--panel-line);
+    letter-spacing:0.03em;
+    pointer-events:none;
+  }
+  .card-preview-hint{
+    position:absolute; bottom:0.7rem; right:0.7rem;
+    font-size:0.66rem;
+    padding:0.2rem 0.5rem;
+    background:rgba(14,32,39,0.82);
+    color:var(--parchment-dim);
+    pointer-events:none;
+  }
+
+  .card-body{
+    padding:1.6rem 1.8rem;
+    display:flex; flex-direction:column; gap:1rem;
+    flex-grow:1;
+  }
+
+  .card-index{
+    font-family:var(--font-mono);
+    font-size:0.72rem;
+    color:var(--gold);
+    letter-spacing:0.03em;
+  }
+  .card h2{
+    font-family:var(--font-display);
+    font-weight:600;
+    font-size:1.5rem;
+    margin:0;
+    color:var(--parchment);
+  }
+  .card p{
+    font-family:var(--font-display);
+    font-size:0.98rem;
+    color:var(--parchment-dim);
+    margin:0;
+    flex-grow:1;
+  }
+  .card-foot{
+    display:flex; justify-content:space-between; align-items:center;
+    font-size:0.72rem;
+    color:var(--route);
+    border-top:1px solid var(--panel-line);
+    padding-top:0.9rem;
+    margin-top:0.4rem;
+  }
+  .card-foot a{
+    color:var(--parchment);
+    text-decoration:none;
+    display:inline-flex; align-items:center; gap:0.35rem;
+  }
+  .card-foot a:hover .card-arrow{ transform:translate(3px,-3px); }
+  .card-arrow{ transition:transform 0.2s ease; font-size:1rem; display:inline-block; }
+
+  .empty, .error{
+    font-family:var(--font-display);
+    font-style:italic;
+    color:var(--parchment-dim);
+    padding:2rem 0;
+  }
+
+  footer{
+    position:relative; z-index:1;
+    padding:3rem 6vw 4rem;
+    border-top:1px solid var(--panel-line);
+    font-size:0.78rem;
+    color:var(--parchment-dim);
+    display:flex; justify-content:space-between; flex-wrap:wrap; gap:1rem;
+  }
+  footer a{ color:var(--route); text-decoration:none; }
+  footer a:hover{ text-decoration:underline; }
+
+  @media (max-width:600px){
+    .grid{ grid-template-columns:1fr; }
+    header.hero{ padding:7vh 6vw 6vh; }
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    *{ animation:none !important; transition:none !important; }
+  }
+</style>
+</head>
+<body>
+
+<svg class="contours" viewBox="0 0 1200 800" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+  <g fill="none" stroke="#7fa9a3" stroke-width="1">
+    <path d="M-50,120 C 200,60 400,180 650,110 S 1000,40 1250,130" />
+    <path d="M-50,220 C 220,160 420,280 640,210 S 980,140 1250,230" />
+    <path d="M-50,320 C 240,260 440,380 660,300 S 1000,240 1250,330" />
+    <path d="M-50,500 C 200,440 460,560 700,480 S 1020,420 1250,510" />
+    <path d="M-50,600 C 230,540 470,660 690,580 S 1010,520 1250,610" />
+    <path d="M-50,700 C 250,650 480,760 720,690 S 1030,630 1250,710" />
+  </g>
+</svg>
+
+<header class="hero">
+  <p class="coord-label">42.6977° N, 23.3219° E — АТЛАС НА ПРОЕКТИТЕ</p>
+  <h1>Димитър Манолов<br>Дигитален атлас</h1>
+  <p class="hero-sub">Интерактивни карти, изградени с Leaflet.js и QGIS — история, население и география, разказани през пространството.</p>
+  <div class="hero-meta">
+    <span><span class="k">GitHub</span> — <a href="https://github.com/dimitar2002m" target="_blank" rel="noopener">github.com/dimitar2002m</a></span>
+    <span><span class="k">Инструменти</span> — Leaflet.js · QGIS · qgis2web</span>
+  </div>
+</header>
+
+<main>
+  <p class="status-line" id="status">
+    <span class="status-dot"></span>
+    <span id="status-text">Зареждане на картите от GitHub…</span>
+  </p>
+  <div class="grid" id="grid"></div>
+</main>
+
+<footer>
+  <span>Обновява се автоматично от repo-та с topic <code>map</code> в GitHub профила.</span>
+  <a href="https://github.com/dimitar2002m" target="_blank" rel="noopener">Целият профил →</a>
+</footer>
+
+<script>
+const GH_USER = "dimitar2002m";
+const TOPIC_FILTER = "map"; // добави този topic на repo-то в GitHub, за да се появи тук автоматично
+
+// Точни линкове (с начален изглед/координати), подадени ръчно —
+// прилагат се и върху резервния списък, и върху repo-тата, заредени от GitHub API.
+const DEMO_OVERRIDES = {
+  "April-Uprising": "https://dimitar2002m.github.io/April-Uprising/",
+  "Population-Density-Map-of-Bulgaria-Census-2021-": "https://dimitar2002m.github.io/Population-Density-Map-of-Bulgaria-Census-2021-/#7/42.869/25.207",
+  "The-Crusades": "https://dimitar2002m.github.io/The-Crusades/",
+  "China-Population-2024-y": "https://dimitar2002m.github.io/China-Population-2024-y/",
+  "Population-Bulgaria-2025": "https://dimitar2002m.github.io/Population-Bulgaria-2025/"
+};
+
+// Ръчен списък като резервен вариант — ползва се ако GitHub API е недостъпен
+// или repo-тата все още нямат topic "map".
+const FALLBACK = [
+  {
+    name: "April-Uprising",
+    title: "Априлското въстание, 1876",
+    description: "Интерактивна карта на въстанието — маршрути на четите, движения на османската армия и революционни окръзи.",
+    repo: "https://github.com/dimitar2002m/April-Uprising",
+    demo: DEMO_OVERRIDES["April-Uprising"]
+  },
+  {
+    name: "Population-Density-Map-of-Bulgaria-Census-2021-",
+    title: "Гъстота на населението — Преброяване 2021",
+    description: "Хороплет карта на населението на България по области, с кръгови диаграми за половото разпределение.",
+    repo: "https://github.com/dimitar2002m/Population-Density-Map-of-Bulgaria-Census-2021-",
+    demo: DEMO_OVERRIDES["Population-Density-Map-of-Bulgaria-Census-2021-"]
+  },
+  {
+    name: "The-Crusades",
+    title: "Кръстоносните походи",
+    description: "Карта на маршрутите и ключовите събития от кръстоносните походи.",
+    repo: "https://github.com/dimitar2002m/The-Crusades",
+    demo: DEMO_OVERRIDES["The-Crusades"]
+  },
+  {
+    name: "China-Population-2024-y",
+    title: "Население на Китай, 2024",
+    description: "Карта на разпределението на населението в Китай по провинции.",
+    repo: "https://github.com/dimitar2002m/China-Population-2024-y",
+    demo: DEMO_OVERRIDES["China-Population-2024-y"]
+  },
+  {
+    name: "Population-Bulgaria-2025",
+    title: "Население на България, 2025",
+    description: "Актуализирана карта на населението на България, изчертана в стила на предходните преброявания.",
+    repo: "https://github.com/dimitar2002m/Population-Bulgaria-2025",
+    demo: DEMO_OVERRIDES["Population-Bulgaria-2025"]
+  }
+];
+
+function repoCard(item, index){
+  const card = document.createElement('div');
+  card.className = 'card';
+
+  // живо преview на картата
+  const preview = document.createElement('div');
+  preview.className = 'card-preview';
+
+  const iframe = document.createElement('iframe');
+  iframe.src = item.demo || item.repo;
+  iframe.loading = 'lazy';
+  iframe.title = item.title;
+  iframe.setAttribute('referrerpolicy', 'no-referrer-when-downgrade');
+
+  const label = document.createElement('span');
+  label.className = 'card-preview-label';
+  label.textContent = String(index + 1).padStart(2, '0') + ' · LIVE';
+
+  const hint = document.createElement('span');
+  hint.className = 'card-preview-hint';
+  hint.textContent = 'плъзгай / скролирай за зуум';
+
+  preview.appendChild(iframe);
+  preview.appendChild(label);
+  preview.appendChild(hint);
+
+  // текстово тяло
+  const body = document.createElement('div');
+  body.className = 'card-body';
+
+  const h2 = document.createElement('h2');
+  h2.textContent = item.title;
+
+  const p = document.createElement('p');
+  p.textContent = item.description;
+
+  const foot = document.createElement('div');
+  foot.className = 'card-foot';
+  const meta = document.createElement('span');
+  meta.textContent = item.updated ? ('обновена ' + item.updated) : item.name;
+  const link = document.createElement('a');
+  link.href = item.demo || item.repo;
+  link.target = '_blank';
+  link.rel = 'noopener';
+  link.innerHTML = 'На цял екран <span class="card-arrow">↗</span>';
+  foot.appendChild(meta);
+  foot.appendChild(link);
+
+  body.appendChild(h2);
+  body.appendChild(p);
+  body.appendChild(foot);
+
+  card.appendChild(preview);
+  card.appendChild(body);
+  return card;
+}
+
+function render(items, source){
+  const grid = document.getElementById('grid');
+  const statusText = document.getElementById('status-text');
+  grid.innerHTML = '';
+
+  if (!items.length){
+    const empty = document.createElement('p');
+    empty.className = 'empty';
+    empty.textContent = 'Все още няма карти с topic "map" в профила.';
+    grid.appendChild(empty);
+    statusText.textContent = 'Няма намерени карти през GitHub API.';
+    return;
+  }
+
+  items.forEach((item, i) => grid.appendChild(repoCard(item, i)));
+  statusText.textContent = source === 'github'
+    ? ('Заредени ' + items.length + ' карти автоматично от GitHub (topic: ' + TOPIC_FILTER + ')')
+    : ('Показани ' + items.length + ' карти от резервния списък');
+}
+
+async function loadFromGithub(){
+  const res = await fetch(`https://api.github.com/users/${GH_USER}/repos?per_page=100&sort=updated`, {
+    headers: { 'Accept': 'application/vnd.github+json' }
+  });
+  if (!res.ok) throw new Error('GitHub API error: ' + res.status);
+  const repos = await res.json();
+
+  const tagged = repos.filter(r => Array.isArray(r.topics) && r.topics.includes(TOPIC_FILTER));
+
+  return tagged.map(r => ({
+    name: r.name,
+    title: r.name.replace(/-/g, ' '),
+    description: r.description || 'Дигитална карта, изградена с Leaflet.js.',
+    repo: r.html_url,
+    demo: DEMO_OVERRIDES[r.name] || r.homepage || `https://${GH_USER}.github.io/${r.name}/`,
+    updated: new Date(r.pushed_at).toLocaleDateString('bg-BG', { year:'numeric', month:'short' })
+  }));
+}
+
+(async function init(){
+  try{
+    const items = await loadFromGithub();
+    if (items.length){
+      render(items, 'github');
+    } else {
+      render(FALLBACK, 'fallback');
+    }
+  } catch(e){
+    render(FALLBACK, 'fallback');
+  }
+})();
+</script>
+
+</body>
+</html>
